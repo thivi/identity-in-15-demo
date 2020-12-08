@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+    <head>
+        <meta charset="utf-8" />
+
+        <title>Identity in 15 - Demo</title>
+
+        <meta name="description" content="" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" />
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet" />
+        <script src="https://unpkg.com/@asgardio/oidc-js@0.1.26/dist/asgardio-oidc.production.min.js"></script>
+        <script>
+            var auth = AsgardioAuth.IdentityClient.getInstance();
+
+            auth.initialize({
+                clientID: "client-id",
+                clientHost: origin,
+                serverOrigin: "https://localhost:9443",
+                signInRedirectURL: origin,
+                signOutRedirectURL: origin,
+                storage: "webWorker",
+                baseUrls: ["https://localhost:9443"]
+            });
+
+            auth.on("sign-in", function (response) {
+                console.log(response);
+                document.getElementById("user").innerHTML = "Hi, " + response.displayName;
+                document.getElementById("signIn").style.display = "none";
+                document.getElementById("fb").style.display = "none";
+                document.getElementById("signOut").style.display = "block";
+            });
+
+            auth.on("sign-out", function () {
+                document.getElementById("user").innerHTML = "";
+                document.getElementById("signIn").style.display = "block";
+                document.getElementById("fb").style.display = "block";
+                document.getElementById("signOut").style.display = "none";
+            });
+
+            function signIn() {
+                auth.signIn();
+            }
+
+            function signOut() {
+                auth.signOut();
+            }
+
+            function fbLogin() {
+                auth.signIn("home-realm-identifier");
+            }
+
+            if (new URL(location.href).searchParams.get("code")) {
+                auth.signIn();
+            }
+        </script>
+        <style>
+            body {
+                font-family: Poppins;
+            }
+            .nav-button {
+                padding: 1em;
+                background-color: white;
+                margin-right: 1rem;
+                border-radius: 5px;
+                margin-top: 1em;
+                margin-bottom: 1em;
+                cursor: pointer;
+            }
+
+            .nav-button a {
+                color: #517ab1;
+                text-decoration: none;
+                font-weight: bolder;
+                font-family: Poppins;
+                font-size: 1em;
+            }
+        </style>
+    </head>
+
+    <body style="margin: 0">
+        <div>
+            <div
+                style="
+                    display: flex;
+                    justify-content: flex-end;
+                    width: 100%;
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    backdrop-filter: blur(10px);
+                "
+            >
+                <div onclick="signIn()" class="nav-button" id="signIn"><a href="#" >Sign In</a></div>
+                <div onclick="signOut()" style="display: none" class="nav-button" id="signOut">
+                    <a href="#" >Sign Out</a>
+                </div>
+                <div  onclick="fbLogin()" style="background: none; padding: 0" class="nav-button" id="fb">
+                    <a
+                        style="
+                            display: block;
+                            background-size: cover;
+                            width: 330px;
+                            height: 53px;
+                            background-image: url(https://z-p3-scontent.fcmb3-1.fna.fbcdn.net/v/t39.2365-6/17639236_1785253958471956_282550797298827264_n.png?_nc_cat=105&ccb=2&_nc_sid=ad8a9d&_nc_ohc=7VnWtGelWkMAX-U1LnF&_nc_ht=z-p3-scontent.fcmb3-1.fna&oh=d7658ef3a5fbee6087e56953f5f42b9b&oe=5FF3BF96);
+                        "
+                        href="#"
+                    ></a>
+                </div>
+            </div>
+            <div
+                style="
+                    height: 100vh;
+                    background-size: cover;
+                    background-image: url(/bg.jpeg);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    flex-direction: column;
+                "
+            >
+                <div id="user" style="font-size: 2em; color: white; font-family: Poppins; text-shadow: 1px 1px 7px black""></div>
+                <h1 style="color: white; font-size: 7em; font-weight: bolder; text-shadow: 1px 1px 11px black">
+                    Identity in 15
+                </h1>
+            </div>
+        </div>
+    </body>
+</html>
